@@ -15,3 +15,6 @@ bool OtaIPsetBySketch = false;
 bool SentOtaIPtrue = false;
 #endif
 float VCC = 3.333;
+float InTemp = 12.3;
+float OutTemp = -0.12;
+float OutRH = 45.6;

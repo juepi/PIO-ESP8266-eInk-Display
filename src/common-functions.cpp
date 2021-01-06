@@ -67,6 +67,18 @@ void MqttCallback(char *topic, byte *payload, unsigned int length)
             delay(200);
         }
     }
+    else if (String(topic) == INDOOR_TEMP_TOP)
+    {
+        InTemp = msgString.toFloat();
+    }
+    else if (String(topic) == OUTDOOR_TEMP_TOP)
+    {
+        OutTemp = msgString.toFloat();
+    }
+    else if (String(topic) == OUTDOOR_RH_TOP)
+    {
+        OutRH = msgString.toFloat();
+    }
     else
     {
         DEBUG_PRINTLN("ERROR: Unknown topic: " + String(topic));

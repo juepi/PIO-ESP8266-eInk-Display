@@ -31,12 +31,38 @@
 #include "mqtt-ota-config.h"
 #include "common-functions.h"
 #include "setup-functions.h"
+#include "epd-config.h"
 
 // Setup WiFi instance
 WiFiClient WIFI_CLTNAME;
 
 // Setup PubSub Client instance
 PubSubClient mqttClt(MQTT_BROKER, 1883, MqttCallback, WIFI_CLTNAME);
+
+// Setup GxEPD instance
+GxIO_Class io(SPI, PCS, PDC, PRST);
+GxEPD_Class display(io, PRST, PBUSY);
+
+/*
+/ Functions
+*/
+
+// Function to subscribe to MQTT topics
+bool MqttSubscribe(const char *Topic)
+{
+  if (mqttClt.subscribe(Topic))
+  {
+    DEBUG_PRINTLN("Subscribed to " + String(Topic));
+    mqttClt.loop();
+    return true;
+  }
+  else
+  {
+    DEBUG_PRINTLN("Failed to subscribe to " + String(Topic));
+    delay(100);
+    return false;
+  }
+}
 
 // Function to connect to MQTT Broker and subscribe to Topics
 bool ConnectToBroker()
@@ -55,28 +81,12 @@ bool ConnectToBroker()
 
 // Subscribe to Topics
 #ifdef OTA_UPDATE
-      if (mqttClt.subscribe(ota_topic))
-      {
-        DEBUG_PRINTLN("Subscribed to " + String(ota_topic));
-        delay(1);
-      }
-      else
-      {
-        DEBUG_PRINTLN("Failed to subscribe to " + String(ota_topic));
-        delay(100);
-      }
-      if (mqttClt.subscribe(otaInProgress_topic))
-      {
-        DEBUG_PRINTLN("Subscribed to " + String(otaInProgress_topic));
-        delay(1);
-      }
-      else
-      {
-        DEBUG_PRINTLN("Failed to subscribe to " + String(otaInProgress_topic));
-        delay(100);
-      }
+      MqttSubscribe(ota_topic);
+      MqttSubscribe(otaInProgress_topic);
 #endif //OTA_UPDATE
-      delay(200);
+      MqttSubscribe(INDOOR_TEMP_TOP);
+      MqttSubscribe(OUTDOOR_RH_TOP);
+      MqttSubscribe(OUTDOOR_TEMP_TOP);
       break;
     }
     else
@@ -111,7 +121,7 @@ void setup()
   // Startup WiFi
   wifi_setup();
 
-  // Setup MQTT Connection to broker and subscribe to topic
+  // Setup MQTT Connection to broker and subscribe to topics
   if (ConnectToBroker())
   {
     DEBUG_PRINTLN("Connected to MQTT broker, fetching topics..");
@@ -125,7 +135,7 @@ void setup()
   }
   else
   {
-    DEBUG_PRINTLN("3 connection attempts to broker failed, using default values..");
+    DEBUG_PRINTLN("3 connection attempts to broker failed!");
     DEBUG_PRINTLN("");
 #ifdef ONBOARD_LED
     ToggleLed(LED, 1000, 4);
@@ -139,10 +149,13 @@ void setup()
     delay(1000);
   }
 
-  // Setup OTA
+  // Setup OTA-Updates
 #ifdef OTA_UPDATE
   ota_setup();
 #endif
+
+  // Initialize e-ink display
+  display.init();
 
 #ifdef ONBOARD_LED
   // Signal setup finished
@@ -168,7 +181,15 @@ void loop()
     else
     {
       DEBUG_PRINTLN("Unable to connect to MQTT broker.");
-      delay(100);
+#ifdef ONBOARD_LED
+      ToggleLed(LED, 1000, 4);
+#endif
+#ifdef DEEP_SLEEP
+      ESP.deepSleep(DS_DURATION_MIN * 60000000);
+      delay(3000);
+#else
+      ESP.reset();
+#endif
     }
   }
   else
@@ -245,12 +266,44 @@ void loop()
   }
 #endif
 
-// START STUFF YOU WANT TO RUN HERE!
-// ============================================
-#ifdef ONBOARD_LED
-  // Toggle LED at each loop
-  ToggleLed(LED, 500, 4);
+  // START STUFF YOU WANT TO RUN HERE!
+  // ============================================
+
+  display.setRotation(Rotation);
+  display.fillScreen(GxEPD_WHITE);
+  display.setCursor(0, 0);
+  display.setTextColor(GxEPD_BLACK);
+  display.setFont(&FreeMonoBold12pt7b);
+  display.println();
+  display.print("Temp. Innen: ");
+#if defined(HAS_RED_COLOR)
+  display.setTextColor(GxEPD_RED);
 #endif
+  display.println(String(VCC) + "V");
+  display.setTextColor(GxEPD_BLACK);
+  display.print("Temp.: ");
+#if defined(HAS_RED_COLOR)
+  display.setTextColor(GxEPD_RED);
+#endif
+  display.println("28.4C");
+#if defined(HAS_RED_COLOR)
+  display.setTextColor(GxEPD_RED);
+#endif
+  display.setTextColor(GxEPD_BLACK);
+  display.print("rel.Luftf.: ");
+#if defined(HAS_RED_COLOR)
+  display.setTextColor(GxEPD_RED);
+#endif
+  display.println("45%");
+  display.setTextColor(GxEPD_BLACK);
+  display.print("QFE: ");
+#if defined(HAS_RED_COLOR)
+  display.setTextColor(GxEPD_RED);
+#endif
+  display.println("1000hPa");
+  DEBUG_PRINTLN("Starting display update..");
+  display.update();
+  DEBUG_PRINTLN("Display update done.");
 
   // Read VCC and publish to MQTT
   delay(300);

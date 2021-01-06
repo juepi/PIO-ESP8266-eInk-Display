@@ -29,14 +29,15 @@ extern char message_buff[20];
 //(don't forget to add the "retain" flag, especially if you want a sleeping ESP to enter flash mode at next boot)
 #define ota_topic "HB7/Test/OTAupdate" //local BOOL, MQTT either "on" or "off"
 extern bool OTAupdate;
+// Topic to publish OTA Update status (no subscription)
 #define otaStatus_topic "HB7/Test/OTAstatus"
-// OTAstatus strings sent by sketch
+// OTA status strings published to otaStatus_topic
 #define UPDATEREQ "update_requested"
 #define UPDATECANC "update_cancelled"
 #define UPDATEOK "update_success"
 extern bool SentUpdateRequested;
 //An additional "external flag" is required to "remind" a freshly running sketch that it was just OTA-flashed..
-//during an OTA update, PubSubClient functions do not ru (or cannot access the network)
+//during an OTA update, PubSubClient functions do not run (or cannot access the network)
 //so this flag will be set to ON when actually waiting for the OTA update to start
 //it will be reset if OtaInProgress and OTAupdate are true (in that case, ESP has most probably just been successfully flashed)
 #define otaInProgress_topic "HB7/Test/OTAinProgress" //local BOOL, MQTT either "on" or "off"
@@ -45,8 +46,16 @@ extern bool OtaIPsetBySketch;
 extern bool SentOtaIPtrue;
 #endif
 
-// Topic where VCC will be published
+// Topic where VCC will be published (no subscription)
 #define vcc_topic "HB7/Test/Vcc"
 extern float VCC;
+
+// Topics to subscribe for Data to display on EPD
+#define INDOOR_TEMP_TOP "HB7/Indoor/WZ/Temp"
+#define OUTDOOR_TEMP_TOP "HB7/Outdoor/Temp"
+#define OUTDOOR_RH_TOP "HB7/Outdoor/RH"
+extern float InTemp;
+extern float OutTemp;
+extern float OutRH;
 
 #endif //MQTT_OTA_CONFIG_H
