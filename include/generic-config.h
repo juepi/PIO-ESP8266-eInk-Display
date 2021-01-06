@@ -9,7 +9,7 @@
 #include <ESP8266WiFi.h>
 
 // Firmware Information
-#define FIRMWARE_NAME "PIO ESP8266 Template"
+#define FIRMWARE_NAME "PIO ESP8266 E-Ink Display"
 #define FIRMWARE_VERSION "1.0.0"
 
 // Serial Output configuration

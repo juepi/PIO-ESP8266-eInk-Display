@@ -1,6 +1,7 @@
 /*
- * ESP8266 Template
- * ==================
+ * ESP8266 E-Ink Display
+ * ======================
+ * Displays Data on EPD fetched through MQTT
  * 
  * Includes useful functions like
  * - DeepSleep
@@ -271,36 +272,30 @@ void loop()
 
   display.setRotation(Rotation);
   display.fillScreen(GxEPD_WHITE);
-  display.setCursor(0, 0);
+  display.setCursor(0, 10);
   display.setTextColor(GxEPD_BLACK);
   display.setFont(&FreeMonoBold12pt7b);
-  display.println();
-  display.print("Temp. Innen: ");
-#if defined(HAS_RED_COLOR)
+  display.print("Temp.WZ: ");
+#ifdef HAS_RED_COLOR
   display.setTextColor(GxEPD_RED);
 #endif
-  display.println(String(VCC) + "V");
+  display.println(String(InTemp,1) + "C");
   display.setTextColor(GxEPD_BLACK);
-  display.print("Temp.: ");
-#if defined(HAS_RED_COLOR)
+  display.print("Temp.OUT: ");
+#ifdef HAS_RED_COLOR
   display.setTextColor(GxEPD_RED);
 #endif
-  display.println("28.4C");
-#if defined(HAS_RED_COLOR)
+  display.println(String(OutTemp,1) + "C");
+#ifdef HAS_RED_COLOR
   display.setTextColor(GxEPD_RED);
 #endif
   display.setTextColor(GxEPD_BLACK);
-  display.print("rel.Luftf.: ");
-#if defined(HAS_RED_COLOR)
+  display.print("RH OUT: ");
+#ifdef HAS_RED_COLOR
   display.setTextColor(GxEPD_RED);
 #endif
-  display.println("45%");
+  display.println(String(OutRH,0) + "%");
   display.setTextColor(GxEPD_BLACK);
-  display.print("QFE: ");
-#if defined(HAS_RED_COLOR)
-  display.setTextColor(GxEPD_RED);
-#endif
-  display.println("1000hPa");
   DEBUG_PRINTLN("Starting display update..");
   display.update();
   DEBUG_PRINTLN("Display update done.");

@@ -27,7 +27,7 @@
 
 // Select used display through correct .h file
 #include <GxGDEW0213Z16/GxGDEW0213Z16.h>  // 2.13" b/w/r
-#define HAS_RED_COLOR
+//#define HAS_RED_COLOR
 
 // Display Rotation 0 = Portrait
 // Rotation 1 = Landscape
