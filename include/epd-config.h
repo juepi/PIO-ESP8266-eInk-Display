@@ -18,7 +18,6 @@
 // BUSY -> D2, RST -> D4, DC -> D3, CS -> D1, CLK -> D5, DIN -> D7, GND -> GND, 3.3V -> 3.3V
 // NOTE: do not use D8 for CS, because ESP won't boot! Using D1 instead
 #define PBUSY D2
-//#define PRST D4 //try D6 instead - D4=LED
 #define PRST D6
 #define PDC D3
 #define PCS D1
@@ -27,7 +26,7 @@
 
 // Select used display through correct .h file
 #include <GxGDEW0213Z16/GxGDEW0213Z16.h>  // 2.13" b/w/r
-//#define HAS_RED_COLOR
+#define HAS_RED_COLOR
 
 // Display Rotation 0 = Portrait
 // Rotation 1 = Landscape
