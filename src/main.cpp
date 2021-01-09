@@ -54,6 +54,7 @@ bool MqttSubscribe(const char *Topic)
   if (mqttClt.subscribe(Topic))
   {
     DEBUG_PRINTLN("Subscribed to " + String(Topic));
+    SubscribedTopics++;
     mqttClt.loop();
     return true;
   }
@@ -68,6 +69,9 @@ bool MqttSubscribe(const char *Topic)
 // Function to connect to MQTT Broker and subscribe to Topics
 bool ConnectToBroker()
 {
+  // Reset subscribed/received Topics counters
+  SubscribedTopics = 0;
+  ReceivedTopics = 0;
   bool RetVal = false;
   int ConnAttempt = 0;
   // Try to connect x times, then return error
@@ -80,7 +84,7 @@ bool ConnectToBroker()
       DEBUG_PRINTLN("connected");
       RetVal = true;
 
-// Subscribe to Topics
+      // Subscribe to Topics
 #ifdef OTA_UPDATE
       MqttSubscribe(ota_topic);
       MqttSubscribe(otaInProgress_topic);
@@ -125,21 +129,29 @@ void setup()
   // Setup MQTT Connection to broker and subscribe to topics
   if (ConnectToBroker())
   {
-    DEBUG_PRINTLN("Connected to MQTT broker, fetching topics..");
-    mqttClt.loop();
+    // New connection to broker, fetch topics
+    // ATTN: will run endlessly if subscribed topics
+    // does not have retained messages and no one posts a message
+    DEBUG_PRINT("Waiting for topics..");
+    while (ReceivedTopics < SubscribedTopics)
+    {
+      DEBUG_PRINT(".");
+      mqttClt.loop();
 #ifdef ONBOARD_LED
-    // broker connected - blink twice
-    ToggleLed(LED, 200, 4);
+      ToggleLed(LED, 100, 2);
 #else
-    delay(500);
+      delay(100);
 #endif
+    }
+    DEBUG_PRINTLN("");
+    DEBUG_PRINTLN("All topics received.");
   }
   else
   {
     DEBUG_PRINTLN("3 connection attempts to broker failed!");
     DEBUG_PRINTLN("");
 #ifdef ONBOARD_LED
-    ToggleLed(LED, 1000, 4);
+    ToggleLed(LED, 100, 40);
 #endif
 #ifdef DEEP_SLEEP
     ESP.deepSleep(DS_DURATION_MIN * 60000000);
@@ -160,7 +172,6 @@ void setup()
 
 #ifdef ONBOARD_LED
   // Signal setup finished
-  delay(300);
   ToggleLed(LED, 200, 6);
 #endif
 }
@@ -171,19 +182,33 @@ void setup()
  */
 void loop()
 {
-  delay(200);
   // Check connection to MQTT broker and update topics
   if (!mqttClt.connected())
   {
     if (ConnectToBroker())
     {
-      mqttClt.loop();
+      // New connection to broker, fetch topics
+      // ATTN: will run endlessly if subscribed topics
+      // does not have retained messages and no one posts a message
+      DEBUG_PRINT("Waiting for topics..");
+      while (ReceivedTopics < SubscribedTopics)
+      {
+        DEBUG_PRINT(".");
+        mqttClt.loop();
+#ifdef ONBOARD_LED
+        ToggleLed(LED, 100, 2);
+#else
+        delay(100);
+#endif
+      }
+      DEBUG_PRINTLN("");
+      DEBUG_PRINTLN("All topics received.");
     }
     else
     {
       DEBUG_PRINTLN("Unable to connect to MQTT broker.");
 #ifdef ONBOARD_LED
-      ToggleLed(LED, 1000, 4);
+      ToggleLed(LED, 100, 40);
 #endif
 #ifdef DEEP_SLEEP
       ESP.deepSleep(DS_DURATION_MIN * 60000000);
@@ -195,6 +220,7 @@ void loop()
   }
   else
   {
+    // update subscribed topics
     mqttClt.loop();
   }
 
@@ -203,18 +229,6 @@ void loop()
   // only loop through OTA function until finished (or reset by MQTT)
   if (OTAupdate)
   {
-    if (millis() < WAIT_MILLIS_FOR_TOPICS_AFTER_BOOT)
-    {
-      // this delay is required to make sure that we know our correct status before doing anything..
-      // shorter delay will not work reliably (fetching all MQTT topics takes a long time)
-      DEBUG_PRINTLN("Sketch just booted, delaying OTA operation until all MQTT topics arrived..");
-#ifdef ONBOARD_LED
-      ToggleLed(LED, 1000, 2);
-#else
-      delay(2000);
-#endif
-      return;
-    }
     if (OtaInProgress && !OtaIPsetBySketch)
     {
       DEBUG_PRINTLN("OTA firmware update successful, resuming normal operation..");
@@ -279,22 +293,22 @@ void loop()
 #ifdef HAS_RED_COLOR
   display.setTextColor(GxEPD_RED);
 #endif
-  display.println(String(InTemp,1) + "C");
+  display.println(String(InTemp, 1) + "C");
   display.setTextColor(GxEPD_BLACK);
   display.print("Temp.OUT: ");
 #ifdef HAS_RED_COLOR
   display.setTextColor(GxEPD_RED);
 #endif
-  display.println(String(OutTemp,1) + "C");
+  display.println(String(OutTemp, 1) + "C");
 #ifdef HAS_RED_COLOR
   display.setTextColor(GxEPD_RED);
 #endif
   display.setTextColor(GxEPD_BLACK);
-  display.print("RH OUT: ");
+  display.print("Luftf.OUT: ");
 #ifdef HAS_RED_COLOR
   display.setTextColor(GxEPD_RED);
 #endif
-  display.println(String(OutRH,0) + "%");
+  display.println(String(OutRH, 0) + "%");
   display.setTextColor(GxEPD_BLACK);
   DEBUG_PRINTLN("Starting display update..");
   display.update();

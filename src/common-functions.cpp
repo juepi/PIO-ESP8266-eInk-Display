@@ -40,10 +40,12 @@ void MqttCallback(char *topic, byte *payload, unsigned int length)
         if (msgString == "on")
         {
             OTAupdate = true;
+            ReceivedTopics++;
         }
         else if (msgString == "off")
         {
             OTAupdate = false;
+            ReceivedTopics++;
         }
         else
         {
@@ -56,10 +58,12 @@ void MqttCallback(char *topic, byte *payload, unsigned int length)
         if (msgString == "on")
         {
             OtaInProgress = true;
+            ReceivedTopics++;
         }
         else if (msgString == "off")
         {
             OtaInProgress = false;
+            ReceivedTopics++;
         }
         else
         {
@@ -70,14 +74,17 @@ void MqttCallback(char *topic, byte *payload, unsigned int length)
     else if (String(topic) == INDOOR_TEMP_TOP)
     {
         InTemp = msgString.toFloat();
+        ReceivedTopics++;
     }
     else if (String(topic) == OUTDOOR_TEMP_TOP)
     {
         OutTemp = msgString.toFloat();
+        ReceivedTopics++;
     }
     else if (String(topic) == OUTDOOR_RH_TOP)
     {
         OutRH = msgString.toFloat();
+        ReceivedTopics++;
     }
     else
     {
