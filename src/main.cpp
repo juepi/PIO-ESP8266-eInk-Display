@@ -246,12 +246,9 @@ void loop()
     {
       mqttClt.publish(otaStatus_topic, String(UPDATEREQ).c_str(), true);
       SentUpdateRequested = true;
+      delay(100);
     }
     DEBUG_PRINTLN("OTA firmware update requested, waiting for upload..");
-#ifdef ONBOARD_LED
-    // Signal OTA update requested
-    ToggleLed(LED, 100, 10);
-#endif
     //set MQTT reminder that OTA update was executed
     if (!SentOtaIPtrue)
     {
@@ -264,6 +261,12 @@ void loop()
     }
     //call OTA function to receive upload
     ArduinoOTA.handle();
+#ifdef ONBOARD_LED
+    // Signal OTA update requested
+    ToggleLed(LED, 100, 10);
+#else
+    delay(1000);
+#endif
     return;
   }
   else
@@ -279,7 +282,7 @@ void loop()
       SentUpdateRequested = false;
     }
   }
-#endif
+#endif //OTA_UPDATE
 
   // START STUFF YOU WANT TO RUN HERE!
   // ============================================
