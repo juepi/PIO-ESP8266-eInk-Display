@@ -25,18 +25,41 @@
 #define PDIN D7
 
 // Select used display through correct .h file
+#define BIG
+//#define SMALL
+#ifdef BIG
+#include <GxGDEW042T2/GxGDEW042T2.h>      // 4.2" b/w
+#else
 #include <GxGDEW0213Z16/GxGDEW0213Z16.h>  // 2.13" b/w/r
 #define HAS_RED_COLOR
+#endif
 
 // Display Rotation 0 = Portrait
 // Rotation 1 = Landscape
+// inverse for 4.2" display!
+#ifdef BIG
+#define ROTATION 0
+#else
 #define ROTATION 1
+#endif
 extern uint16_t Rotation;
 
+// Pixel Offset for first line
+#ifdef BIG
+#define X_OFFSET 0
+#define Y_OFFSET 20
+#else
+#define X_OFFSET 0
+#define Y_OFFSET 10
+#endif
+
 // Add Fonts
-//#include <Fonts/FreeMonoBold9pt7b.h>
-#include <Fonts/FreeMonoBold12pt7b.h>
-//#include <Fonts/FreeMonoBold18pt7b.h>
+#ifdef BIG
+#include <Fonts/FreeMonoBold18pt7b.h>
+//#include <Fonts/FreeMonoBold12pt7b.h>
 //#include <Fonts/FreeMonoBold24pt7b.h>
+#else
+#include <Fonts/FreeMonoBold9pt7b.h>
+#endif
 
 #endif //EPD_CONFIG_H
