@@ -291,14 +291,18 @@ void loop()
   display.fillScreen(GxEPD_WHITE);
   display.setCursor(X_OFFSET, Y_OFFSET);
   display.setTextColor(GxEPD_BLACK);
-  display.setFont(&FreeMonoBold18pt7b);
-  display.print(" Temp.   WZ: ");
+  #ifdef BIG
+  display.setFont(&FreeMonoBold24pt7b);
+  #else
+  display.setFont(&FreeMonoBold9pt7b);
+  #endif
+  display.print("Temp.WZ: ");
 #ifdef HAS_RED_COLOR
   display.setTextColor(GxEPD_RED);
 #endif
   display.println(String(InTemp, 1) + "C");
   display.setTextColor(GxEPD_BLACK);
-  display.print(" Temp.  OUT: ");
+  display.print("Temp.OUT:");
 #ifdef HAS_RED_COLOR
   display.setTextColor(GxEPD_RED);
 #endif
@@ -307,7 +311,7 @@ void loop()
   display.setTextColor(GxEPD_RED);
 #endif
   display.setTextColor(GxEPD_BLACK);
-  display.print(" Luftf. OUT: ");
+  display.print("Luftf.OUT: ");
 #ifdef HAS_RED_COLOR
   display.setTextColor(GxEPD_RED);
 #endif

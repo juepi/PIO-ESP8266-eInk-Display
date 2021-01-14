@@ -47,7 +47,7 @@ extern uint16_t Rotation;
 // Pixel Offset for first line
 #ifdef BIG
 #define X_OFFSET 0
-#define Y_OFFSET 20
+#define Y_OFFSET 25
 #else
 #define X_OFFSET 0
 #define Y_OFFSET 10
@@ -55,9 +55,9 @@ extern uint16_t Rotation;
 
 // Add Fonts
 #ifdef BIG
-#include <Fonts/FreeMonoBold18pt7b.h>
+//#include <Fonts/FreeMonoBold18pt7b.h>
 //#include <Fonts/FreeMonoBold12pt7b.h>
-//#include <Fonts/FreeMonoBold24pt7b.h>
+#include <Fonts/FreeMonoBold24pt7b.h>
 #else
 #include <Fonts/FreeMonoBold9pt7b.h>
 #endif
