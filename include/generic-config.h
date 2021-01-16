@@ -26,6 +26,6 @@
 // ESP DeepSleep Configuration
 //
 // DeepSleep duration in Minutes (max. 60)
-#define DS_DURATION_MIN 2
+#define DS_DURATION_MIN 15
 
 #endif //GENERIC_CONFIG_H

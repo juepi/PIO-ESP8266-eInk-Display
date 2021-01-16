@@ -47,7 +47,7 @@ extern uint16_t Rotation;
 // Pixel Offset for first line
 #ifdef BIG
 #define X_OFFSET 0
-#define Y_OFFSET 25
+#define Y_OFFSET 35
 #else
 #define X_OFFSET 0
 #define Y_OFFSET 10

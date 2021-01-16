@@ -24,7 +24,7 @@ extern unsigned int SubscribedTopics;
 extern unsigned int ReceivedTopics;
 
 // MQTT Topic Tree prepended to all topics
-#define TOPTREE "HB7/Test/"
+#define TOPTREE "HB7/Indoor/WZ/eInkDisp/"
 
 // MQTT Topics and corresponding local vars
 // ===========================================
@@ -56,15 +56,17 @@ extern bool SentOtaIPtrue;
 #endif
 
 // Topic where VCC will be published
-#define vcc_topic TOPTREE "Vcc"
+#define vcc_topic TOPTREE "Vbat"
 extern float VCC;
 
 // Topics to subscribe for Data to display on EPD
 #define INDOOR_TEMP_TOP "HB7/Indoor/WZ/Temp"
 #define OUTDOOR_TEMP_TOP "HB7/Outdoor/Temp"
+#define INDOOR_RH_TOP "HB7/Indoor/WZ/RH"
 #define OUTDOOR_RH_TOP "HB7/Outdoor/RH"
 extern float InTemp;
 extern float OutTemp;
+extern float InRH;
 extern float OutRH;
 
 #endif //MQTT_OTA_CONFIG_H

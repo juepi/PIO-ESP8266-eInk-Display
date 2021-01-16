@@ -86,6 +86,11 @@ void MqttCallback(char *topic, byte *payload, unsigned int length)
         OutRH = msgString.toFloat();
         ReceivedTopics++;
     }
+    else if (String(topic) == INDOOR_RH_TOP)
+    {
+        InRH = msgString.toFloat();
+        ReceivedTopics++;
+    }
     else
     {
         DEBUG_PRINTLN("ERROR: Unknown topic: " + String(topic));

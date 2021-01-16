@@ -33,6 +33,7 @@
 #include "common-functions.h"
 #include "setup-functions.h"
 #include "epd-config.h"
+#include "user-config.h"
 
 // Setup WiFi instance
 WiFiClient WIFI_CLTNAME;
@@ -90,6 +91,7 @@ bool ConnectToBroker()
       MqttSubscribe(otaInProgress_topic);
 #endif //OTA_UPDATE
       MqttSubscribe(INDOOR_TEMP_TOP);
+      MqttSubscribe(INDOOR_RH_TOP);
       MqttSubscribe(OUTDOOR_RH_TOP);
       MqttSubscribe(OUTDOOR_TEMP_TOP);
       break;
@@ -267,6 +269,17 @@ void loop()
 #else
     delay(1000);
 #endif
+    if (!DisplayShowsOTA)
+    {
+      display.setRotation(Rotation);
+      display.fillScreen(GxEPD_BLACK);
+      display.setCursor(0, 150);
+      display.setTextColor(GxEPD_WHITE);
+      display.setFont(&FreeMonoBold24pt7b);
+      display.println(" OTA Update !");
+      display.update();
+      DisplayShowsOTA = true;
+    }
     return;
   }
   else
@@ -291,18 +304,19 @@ void loop()
   display.fillScreen(GxEPD_WHITE);
   display.setCursor(X_OFFSET, Y_OFFSET);
   display.setTextColor(GxEPD_BLACK);
-  #ifdef BIG
+#ifdef BIG
   display.setFont(&FreeMonoBold24pt7b);
-  #else
+#else
   display.setFont(&FreeMonoBold9pt7b);
-  #endif
-  display.print("Temp.WZ: ");
+#endif
+  display.println(" Temperaturen");
+  display.print("Wohnz.: ");
 #ifdef HAS_RED_COLOR
   display.setTextColor(GxEPD_RED);
 #endif
   display.println(String(InTemp, 1) + "C");
   display.setTextColor(GxEPD_BLACK);
-  display.print("Temp.OUT:");
+  display.print("Aussen: ");
 #ifdef HAS_RED_COLOR
   display.setTextColor(GxEPD_RED);
 #endif
@@ -311,7 +325,15 @@ void loop()
   display.setTextColor(GxEPD_RED);
 #endif
   display.setTextColor(GxEPD_BLACK);
-  display.print("Luftf.OUT: ");
+
+  display.setCursor(0, 195);
+  display.println("  rel. Luftf.");
+  display.print("Wohnz.: ");
+#ifdef HAS_RED_COLOR
+  display.setTextColor(GxEPD_RED);
+#endif
+  display.println(String(InRH, 0) + "%");
+  display.print("Aussen: ");
 #ifdef HAS_RED_COLOR
   display.setTextColor(GxEPD_RED);
 #endif
