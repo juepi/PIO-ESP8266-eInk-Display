@@ -209,6 +209,14 @@ void loop()
     else
     {
       DEBUG_PRINTLN("Unable to connect to MQTT broker.");
+      display.setRotation(Rotation);
+      display.fillScreen(GxEPD_BLACK);
+      display.setCursor(0, 150);
+      display.setTextColor(GxEPD_WHITE);
+      display.setFont(&FreeMonoBold24pt7b);
+      display.println(" No MQTT Broker !");
+      display.update();
+
 #ifdef ONBOARD_LED
       ToggleLed(LED, 100, 40);
 #endif
@@ -301,7 +309,7 @@ void loop()
   // ============================================
 
   display.setRotation(Rotation);
-  display.fillScreen(GxEPD_WHITE);
+  //display.fillScreen(GxEPD_WHITE);
   display.setCursor(X_OFFSET, Y_OFFSET);
   display.setTextColor(GxEPD_BLACK);
 #ifdef BIG
