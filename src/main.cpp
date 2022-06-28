@@ -128,42 +128,6 @@ void setup()
   // Startup WiFi
   wifi_setup();
 
-  // Setup MQTT Connection to broker and subscribe to topics
-  if (ConnectToBroker())
-  {
-    // New connection to broker, fetch topics
-    // ATTN: will run endlessly if subscribed topics
-    // does not have retained messages and no one posts a message
-    DEBUG_PRINT("Waiting for topics..");
-    while (ReceivedTopics < SubscribedTopics)
-    {
-      DEBUG_PRINT(".");
-      mqttClt.loop();
-#ifdef ONBOARD_LED
-      ToggleLed(LED, 100, 2);
-#else
-      delay(100);
-#endif
-    }
-    DEBUG_PRINTLN("");
-    DEBUG_PRINTLN("All topics received.");
-  }
-  else
-  {
-    DEBUG_PRINTLN("3 connection attempts to broker failed!");
-    DEBUG_PRINTLN("");
-#ifdef ONBOARD_LED
-    ToggleLed(LED, 100, 40);
-#endif
-#ifdef DEEP_SLEEP
-    ESP.deepSleep(DS_DURATION_MIN * 60000000);
-    delay(3000);
-#else
-    ESP.reset();
-#endif
-    delay(1000);
-  }
-
   // Setup OTA-Updates
 #ifdef OTA_UPDATE
   ota_setup();
@@ -214,7 +178,8 @@ void loop()
       display.setCursor(0, 150);
       display.setTextColor(GxEPD_WHITE);
       display.setFont(&FreeMonoBold24pt7b);
-      display.println(" No MQTT Broker !");
+      display.println("No MQTT Broker");
+      display.println("Check Server!");
       display.update();
 
 #ifdef ONBOARD_LED
